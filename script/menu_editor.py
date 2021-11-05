@@ -7,12 +7,14 @@ pygame.display.set_caption('Menu Editor')
 
 class Menu_Editor:
     def __init__(self):
-        self.screen = pygame.display.set_mode((1000, 700), pygame.RESIZABLE+pygame.SCALED)
+        self.screen = pygame.display.set_mode((1000, 700), pygame.RESIZABLE)
         self.workspace = Workspace(self)
         self.selection_panel = Selection_Panel(self)
         self.format_panel = Format_Panel(self)
 
     def render(self):
+        self.screen.fill((0,0,0))
+        
         self.workspace.render()
         self.selection_panel.render()
         self.format_panel.render()
