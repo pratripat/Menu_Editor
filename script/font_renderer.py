@@ -60,7 +60,7 @@ class Font:
             self.images.append(image)
 
     #Returns the surface on which the text will be rendered
-    def get_surface(self, text):
+    def get_surface(self, text, font_wrapping_width=None):
         width = 0
         height = 0
 
@@ -76,6 +76,16 @@ class Font:
             elif chr == ' ':
                 width += self.space_width
 
+        height_copy = height
+
+        if font_wrapping_width and width > font_wrapping_width:
+            height *= int(width/font_wrapping_width)+1
+            width = font_wrapping_width
+
+        for chr in text:
+            if chr == '\r':
+                height += height_copy
+
         surface = pygame.Surface((width, height))
         surface.set_colorkey((0,0,0))
 
@@ -90,17 +100,24 @@ class Font:
         return surf
 
     #Renders the text on the surface
-    def render(self, screen, text, position, center=(False, False), scale=1, color=None, background_color=None, alpha=255):
+    def render(self, screen, text, position, center=(False, False), scale=1, color=None, background_color=None, alpha=255, font_wrapping_width=None):
         text = text.upper()
-        surface = self.get_surface(text)
+        surface = self.get_surface(text, font_wrapping_width)
         surface = pygame.transform.scale(surface, (round(surface.get_width()*scale), round(surface.get_height()*scale)))
         temp_pos = [0,0]
 
         for chr in text:
+            if chr == '\r':
+                temp_pos[0] = 0
+                temp_pos[1] += max([image.get_height() for image in self.images])
             if chr in self.characters:
                 index = self.characters.index(chr)
                 image = self.images[index]
                 image = pygame.transform.scale(image, (round(image.get_width()*scale), round(image.get_height()*scale)))
+
+                if temp_pos[0]+image.get_width() > surface.get_width():
+                    temp_pos[0] = 0
+                    temp_pos[1] += max([image.get_height() for image in self.images])
 
                 surface.blit(image, temp_pos)
 
@@ -110,7 +127,7 @@ class Font:
 
         if color:
             surface = self.change_color(surface, (252,252,252), color)
-            surface.set_colorkey((0,0,0))
+            # surface.set_colorkey((0,0,0))
 
         if center[0]:
             position = [position[0]-surface.get_width()/2, position[1]]
@@ -122,8 +139,17 @@ class Font:
             background.fill(background_color)
             screen.blit(background, position)
 
-        surface.set_alpha(alpha)    
+        surface.set_alpha(alpha)
 
         screen.blit(surface, position)
 
         return position
+
+    def remove_unwanted_text(self, text):
+        text = text.upper()
+
+        for chr in text:
+            if chr not in self.characters and chr not in [' ', '\r']:
+                text = text.replace(chr, '')
+
+        return text

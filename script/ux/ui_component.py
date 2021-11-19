@@ -1,6 +1,66 @@
-import pygame
+import pygame, json
 
 from ..font_renderer import Font
+
+"""
+{
+"id": "menu_button",
+"text": "Menu",
+"offset": [20, 20],
+"size": [150, 50],
+"centered": false,
+"background_color": [99,92,109],
+"border_color": [255,255,209],
+"hover_color": [255,255,209],
+"border_width": 1,
+"border_radius": 10,
+"opacity": 100,
+"font": "default_font.png",
+"font_color": [0,0,1],
+"font_scale": 1.5,
+"font_background": null,
+"font_opacity": 100,
+"interactable": true
+},
+{
+"id": "button_button",
+"text": "Button",
+"offset": [20, 100],
+"size": [150, 50],
+"centered": false,
+"background_color": [99,92,109],
+"border_color": [255,255,209],
+"hover_color": [255,255,209],
+"border_width": 1,
+"border_radius": 10,
+"opacity": 100,
+"font": "default_font.png",
+"font_color": [0,0,1],
+"font_scale": 1.5,
+"font_background": null,
+"font_opacity": 100,
+"interactable": true
+},
+{
+"id": "textbox_button",
+"text": "Text Box",
+"offset": [20, 180],
+"size": [150, 50],
+"centered": false,
+"background_color": [99,92,109],
+"border_color": [255,255,209],
+"hover_color": [255,255,209],
+"border_width": 1,
+"border_radius": 10,
+"opacity": 100,
+"font": "default_font.png",
+"font_color": [0,0,1],
+"font_scale": 1.5,
+"font_background": null,
+"font_opacity": 100,
+"interactable": true
+}
+"""
 
 class UI_Component:
     def __init__(self, menu_editor, menu, object_type, data=None):
@@ -8,7 +68,9 @@ class UI_Component:
         self.menu = menu
 
         if not data:
-            data = json.load(open('data/configs/'+object_type+'.json'))
+            data = json.load(open('data/configs/default/'+object_type+'.json', 'r'))
+
+        self.is_menu = False
 
         #PROPERTIES
         self.id = data['id']
@@ -16,6 +78,7 @@ class UI_Component:
         self.offset = data['offset']
         self.size = data['size']
         self.centered = data['centered']
+        self.object_id = self.id.split('_')[-1] # button from random_button
 
         #STYLE
         self.background_color = data['background_color']
@@ -28,17 +91,20 @@ class UI_Component:
         #TEXT
         if data['font'] != None:
             self.font = Font('data/graphics/spritesheet/'+data['font'])
+            self.font_filename = data['font']
         else:
             self.font = None
+            self.font_filename = None
 
         self.font_color = data['font_color']
         self.font_scale = data['font_scale']
         self.font_background = data['font_background']
         self.font_opacity = data['font_opacity']
+        self.interactable = data['interactable']
 
         self.current_color = self.background_color
 
-    def render(self):
+    def render(self, scroll=[0,0]):
         surface = pygame.Surface(self.size)
         surface.set_colorkey((0,0,0))
 
@@ -47,31 +113,67 @@ class UI_Component:
 
         surface.set_alpha(self.opacity/100*255)
 
-        self.menu_editor.screen.blit(surface, self.position)
+        self.menu_editor.screen.blit(surface, [self.position[0]-self.render_offset[0]-scroll[0], self.position[1]-self.render_offset[1]-scroll[1]])
 
         if self.font:
-            alpha = self.font_opacity/100*255
-            self.font.render(self.menu_editor.screen, self.text, self.font_position, center=(True, True), scale=self.font_scale, color=self.font_color, background_color=self.font_background, alpha=alpha)
+            self.text = self.font.remove_unwanted_text(self.text)
 
-    def update(self):
-        if self.is_mouse_hovering():
+            alpha = self.font_opacity/100*255
+            self.font.render(self.menu_editor.screen, self.text, [self.font_position[0]-self.render_offset[0]-scroll[0], self.font_position[1]-self.render_offset[1]-scroll[1]], center=(True, True), scale=self.font_scale, color=self.font_color, background_color=self.font_background, alpha=alpha, font_wrapping_width=self.size[0]-20)
+
+    def highlight(self, scroll=[0,0]):
+        if not self.interactable:
+            return
+
+        pygame.draw.rect(self.menu_editor.screen, self.border_color, [self.position[0]-self.render_offset[0]-scroll[0]-5, self.position[1]-self.render_offset[1]-scroll[1]-5, self.size[0]+10, self.size[1]+10], width=2, border_radius=self.border_radius)
+
+    def update(self, scroll=[0,0]):
+        if self.is_mouse_hovering(scroll):
             self.current_color = self.hover_color
         else:
             self.current_color = self.background_color
 
-        if self.is_clicked():
-            self.menu.send_event('button_click', self.id)
+        if self.is_clicked(scroll):
+            self.menu.send_event(f'{self.object_id}_click', self.id)
 
-    def is_mouse_hovering(self):
+    def check_for_inputs(self):
+        pass
+
+    def is_mouse_hovering(self, scroll=[0,0]):
         mouse_pos = pygame.mouse.get_pos()
 
         return (
-            self.position[0] < mouse_pos[0] < self.position[0]+self.size[0] and
-            self.position[1] < mouse_pos[1] < self.position[1]+self.size[1]
+            self.position[0]-self.render_offset[0] < mouse_pos[0]+scroll[0] < self.position[0]-self.render_offset[0]+self.size[0] and
+            self.position[1]-self.render_offset[1] < mouse_pos[1]+scroll[1] < self.position[1]-self.render_offset[1]+self.size[1]
         )
 
-    def is_clicked(self):
-        return self.is_mouse_hovering() and pygame.mouse.get_pressed()[0]
+    def is_clicked(self, scroll=[0,0]):
+        if pygame.mouse.get_pressed()[0]:
+            if self.is_mouse_hovering(scroll):
+                self.menu.selected_object = self
+                return True
+            elif not self.menu.is_clicked():
+                self.menu.selected_object = None
+            return False
+
+    def get_data(self):
+        return {
+            'id': self.id,
+            'position': self.position,
+            'size': self.size,
+            'centered': self.centered,
+            'background_color': self.background_color,
+            'border_color': self.border_color,
+            'hover_color': self.hover_color,
+            'border_width': self.border_width,
+            'border_radius': self.border_radius,
+            'opacity': self.opacity,
+            'font': self.font_filename,
+            'font_color': self.font_color,
+            'font_scale': self.font_scale,
+            'font_background': self.font_background,
+            'font_opacity': self.font_opacity
+        }
 
     @property
     def position(self):
@@ -80,3 +182,9 @@ class UI_Component:
     @property
     def font_position(self):
         return [self.position[0]+self.size[0]/2, self.position[1]+self.size[1]/2]
+
+    @property
+    def render_offset(self):
+        if self.centered:
+            return [self.size[0]/2, self.size[1]/2]
+        return [0, 0]
