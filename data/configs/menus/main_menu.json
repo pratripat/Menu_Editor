@@ -1,13 +1,13 @@
 {
-  "id": "selection_panel_menu",
-  "position": [0, 0],
-  "size": [200, 200],
-  "centered": false,
+  "id": "main_menu",
+  "position": [500, 350],
+  "size": [500, 500],
+  "centered": true,
   "background_color": [99,92,109],
   "border_color": [255,255,209],
   "border_width": 1,
   "border_radius": 10,
-  "opacity": 50,
+  "opacity": 100,
   "buttons": [],
   "textboxes": []
 }
