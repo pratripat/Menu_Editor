@@ -127,7 +127,7 @@ class Font:
 
         if color:
             surface = self.change_color(surface, (252,252,252), color)
-            # surface.set_colorkey((0,0,0))
+            surface.set_colorkey((0,0,0))
 
         if center[0]:
             position = [position[0]-surface.get_width()/2, position[1]]

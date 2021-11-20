@@ -20,5 +20,3 @@ class TextBox(UI_Component):
             #other keys
             else:
                 self.text += key
-
-        self.menu_editor.format_panel.update_attrs()
