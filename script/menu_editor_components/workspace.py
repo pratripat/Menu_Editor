@@ -1,6 +1,5 @@
 import pygame, json
 from ..ux.menu import Menu
-from ..ux.ui_components.button import Button
 
 class Workspace:
     def __init__(self, menu_editor):
@@ -30,6 +29,9 @@ class Workspace:
     def update_current_object(self):
         self.current_menu.update(self.scroll)
 
+        if self.current_menu.selected_object and self.current_menu.selected_object.object_id == 'textbox':
+            self.menu_editor.format_panel.update_attrs()
+
         for object in self.current_menu.objects:
             if object.is_clicked(self.scroll):
                 self.set_current_object(object)
@@ -37,7 +39,6 @@ class Workspace:
 
         #TEMP
         if self.current_menu.is_clicked(self.scroll):
-            print(self.current_menu)
             self.set_current_object(self.current_menu)
 
     def add_object(self, position):
@@ -50,6 +51,8 @@ class Workspace:
             object = self.current_menu.add_button(self.start_position, [position[0]+self.scroll[0], position[1]+self.scroll[1]])
         elif self.menu_editor.selection_panel.menu.selected_object.id == 'textbox_button':
             object = self.current_menu.add_textbox(self.start_position, [position[0]+self.scroll[0], position[1]+self.scroll[1]])
+        elif self.menu_editor.selection_panel.menu.selected_object.id == 'checkbox_button':
+            object = self.current_menu.add_checkbox(self.start_position, [position[0]+self.scroll[0], position[1]+self.scroll[1]])
 
         if object:
             self.set_current_object(object)

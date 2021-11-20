@@ -2,6 +2,7 @@ import pygame, json
 
 from .ui_components.button import Button
 from .ui_components.textbox import TextBox
+from .ui_components.checkbox import CheckBox
 
 class Menu:
     def __init__(self, menu_editor, data=None):
@@ -10,7 +11,7 @@ class Menu:
         if not data:
             data = json.load(open('data/configs/default/menu.json', 'r'))
 
-        self.is_menu = True    
+        self.is_menu = True
 
         #PROPERTIES
         self.id = data['id']
@@ -27,10 +28,10 @@ class Menu:
 
         self.buttons = self.load_buttons(data['buttons'])
         self.textboxes = self.load_textboxes(data['textboxes'])
-        # self.check_boxes = data['check_boxes']
+        self.checkboxes = self.load_checkboxes(data['checkboxes'])
         # self.radio_buttons = data['radio_buttons']
         # self.sub_menus = data['sub_menus']
-        self.events = {'button_click': [], 'textbox_click': []}
+        self.events = {'button_click': [], 'textbox_click': [], 'checkbox_click': []}
 
         self.selected_object = None
 
@@ -52,6 +53,15 @@ class Menu:
 
         return textboxes
 
+    def load_checkboxes(self, checkboxes_data):
+        checkboxes = []
+
+        for data in checkboxes_data:
+            checkbox = CheckBox(self.menu_editor, self, data)
+            checkboxes.append(checkbox)
+
+        return checkboxes
+
     def render(self, scroll=[0,0]):
         surface = pygame.Surface(self.size)
         surface.set_colorkey((0,0,0))
@@ -69,23 +79,17 @@ class Menu:
 
         self.menu_editor.screen.blit(surface, position)
 
-        for button in self.buttons:
-            button.render(scroll)
-
-        for textbox in self.textboxes:
-            textbox.render(scroll)
+        for object in self.objects:
+            object.render(scroll)
 
         if self.selected_object:
             self.selected_object.highlight(scroll)
 
     def update(self, scroll=[0,0]):
-        self.events = {'button_click': [], 'textbox_click': []}
+        self.events = {'button_click': [], 'textbox_click': [], 'checkbox_click': []}
 
-        for button in self.buttons:
-            button.update(scroll)
-
-        for textbox in self.textboxes:
-            textbox.update(scroll)
+        for object in self.objects:
+            object.update(scroll)
 
         if self.selected_object:
             self.selected_object.check_for_inputs()
@@ -135,6 +139,27 @@ class Menu:
         self.textboxes.append(textbox)
         return textbox
 
+    def add_checkbox(self, start_position, end_position):
+        checkbox = CheckBox(self.menu_editor, self)
+        checkbox.offset = [start_position[0]-self.position[0], start_position[1]-self.position[1]]
+        checkbox.size = [end_position[0]-start_position[0], end_position[1]-start_position[1]]
+
+        if 0 in checkbox.size:
+            return None
+
+        if checkbox.size[0] < 0:
+            checkbox.offset[0] += checkbox.size[0]
+            checkbox.size[0] = abs(checkbox.size[0])
+        if checkbox.size[1] < 0:
+            checkbox.offset[1] += checkbox.size[1]
+            checkbox.size[1] = abs(checkbox.size[1])
+
+        if checkbox.id in [b.id for b in self.checkboxes]:
+            checkbox.id += str(len(self.checkboxes))
+
+        self.checkboxes.append(checkbox)
+        return checkbox
+
     def change_object_attr(self, object_id, attribute, value):
         for object in self.objects:
             if object.id == object_id:
@@ -159,7 +184,7 @@ class Menu:
         }
 
     def get_object_with_id(self, id):
-        for object in [*self.buttons, *self.textboxes]:
+        for object in [*self.buttons, *self.textboxes, *self.checkboxes]:
             if object.id == id:
                 return object
 
@@ -178,7 +203,7 @@ class Menu:
 
     @property
     def objects(self):
-        return [*self.buttons, *self.textboxes]
+        return [*self.buttons, *self.textboxes, *self.checkboxes]
 
     @property
     def render_offset(self):

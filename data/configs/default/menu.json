@@ -9,5 +9,6 @@
   "border_radius": 10,
   "opacity": 50,
   "buttons": [],
-  "textboxes": []
+  "textboxes": [],
+  "checkboxes": []
 }

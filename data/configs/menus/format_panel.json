@@ -124,5 +124,6 @@
       "font_opacity": 100,
       "interactable": true
     }
-  ]
+  ],
+  "checkboxes": []
 }
