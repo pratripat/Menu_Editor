@@ -3,11 +3,10 @@ import pygame, json
 from .ui_components.button import Button
 from .ui_components.textbox import TextBox
 from .ui_components.checkbox import CheckBox
+from .ui_components.radiobutton import RadioButton
 
 class Menu:
-    def __init__(self, menu_editor, data=None):
-        self.menu_editor = menu_editor
-
+    def __init__(self, data=None):
         if not data:
             data = json.load(open('data/configs/default/menu.json', 'r'))
 
@@ -18,6 +17,7 @@ class Menu:
         self.position = data['position']
         self.size = data['size']
         self.centered = data['centered']
+        self.render_according_to_scroll = True
 
         # #STYLE
         self.background_color = tuple(data['background_color'])
@@ -29,9 +29,9 @@ class Menu:
         self.buttons = self.load_buttons(data['buttons'])
         self.textboxes = self.load_textboxes(data['textboxes'])
         self.checkboxes = self.load_checkboxes(data['checkboxes'])
-        # self.radio_buttons = data['radio_buttons']
+        self.radiobuttons = data['radiobuttons']
         # self.sub_menus = data['sub_menus']
-        self.events = {'button_click': [], 'textbox_click': [], 'checkbox_click': []}
+        self.events = {'button_click': [], 'textbox_click': [], 'checkbox_click': [], 'radiobutton_click': []}
 
         self.selected_object = None
 
@@ -39,7 +39,7 @@ class Menu:
         buttons = []
 
         for data in buttons_data:
-            button = Button(self.menu_editor, self, data)
+            button = Button(self, data)
             buttons.append(button)
 
         return buttons
@@ -48,7 +48,7 @@ class Menu:
         textboxes = []
 
         for data in textboxes_data:
-            textbox = TextBox(self.menu_editor, self, data)
+            textbox = TextBox(self, data)
             textboxes.append(textbox)
 
         return textboxes
@@ -57,12 +57,24 @@ class Menu:
         checkboxes = []
 
         for data in checkboxes_data:
-            checkbox = CheckBox(self.menu_editor, self, data)
+            checkbox = CheckBox(self, data)
             checkboxes.append(checkbox)
 
         return checkboxes
 
-    def render(self, scroll=[0,0]):
+    def load_radiobuttons(self, checkboxes_data):
+        radiobuttons = []
+
+        for data in radiobuttons_data:
+            radiobutton = RadioButton(self, data)
+            radiobuttons.append(radiobutton)
+
+        return radiobuttons
+
+    def render(self, screen, scroll=[0,0]):
+        if not self.render_according_to_scroll:
+            scroll = [0,0]
+
         surface = pygame.Surface(self.size)
         surface.set_colorkey((0,0,0))
 
@@ -77,28 +89,37 @@ class Menu:
 
         position = [self.position[0]-offset[0]-scroll[0], self.position[1]-offset[1]-scroll[1]]
 
-        self.menu_editor.screen.blit(surface, position)
+        screen.blit(surface, position)
 
         for object in self.objects:
-            object.render(scroll)
+            object.render(screen, scroll)
 
         if self.selected_object:
-            self.selected_object.highlight(scroll)
+            self.selected_object.highlight(screen, scroll)
 
-    def update(self, scroll=[0,0]):
-        self.events = {'button_click': [], 'textbox_click': [], 'checkbox_click': []}
+    def update(self, scroll=[0,0], keys=[]):
+        if not self.render_according_to_scroll:
+            scroll = [0,0]
 
         for object in self.objects:
             object.update(scroll)
 
         if self.selected_object:
-            self.selected_object.check_for_inputs()
+            self.selected_object.check_for_inputs(keys)
+
+        if len(self.events['radiobutton_click']) > 0:
+            checked_radiobutton_id = self.events['radiobutton_click'][-1]
+            for radiobutton in self.radiobuttons:
+                if radiobutton.id != checked_radiobutton_id:
+                    radiobutton.checked = False
+
+        self.events = {'button_click': [], 'textbox_click': [], 'checkbox_click': [], 'radiobutton_click': []}
 
     def send_event(self, event_type, object_id):
         self.events[event_type].append(object_id)
 
     def add_button(self, start_position, end_position):
-        button = Button(self.menu_editor, self)
+        button = Button(self)
         button.offset = [start_position[0]-self.position[0], start_position[1]-self.position[1]]
         button.size = [end_position[0]-start_position[0], end_position[1]-start_position[1]]
 
@@ -119,7 +140,7 @@ class Menu:
         return button
 
     def add_textbox(self, start_position, end_position):
-        textbox = TextBox(self.menu_editor, self)
+        textbox = TextBox(self)
         textbox.offset = [start_position[0]-self.position[0], start_position[1]-self.position[1]]
         textbox.size = [end_position[0]-start_position[0], end_position[1]-start_position[1]]
 
@@ -140,7 +161,7 @@ class Menu:
         return textbox
 
     def add_checkbox(self, start_position, end_position):
-        checkbox = CheckBox(self.menu_editor, self)
+        checkbox = CheckBox(self)
         checkbox.offset = [start_position[0]-self.position[0], start_position[1]-self.position[1]]
         checkbox.size = [end_position[0]-start_position[0], end_position[1]-start_position[1]]
 
@@ -159,6 +180,27 @@ class Menu:
 
         self.checkboxes.append(checkbox)
         return checkbox
+
+    def add_radiobutton(self, start_position, end_position):
+        radiobutton = RadioButton(self)
+        radiobutton.offset = [start_position[0]-self.position[0], start_position[1]-self.position[1]]
+        radiobutton.size = [end_position[0]-start_position[0], end_position[1]-start_position[1]]
+
+        if 0 in radiobutton.size:
+            return None
+
+        if radiobutton.size[0] < 0:
+            radiobutton.offset[0] += radiobutton.size[0]
+            radiobutton.size[0] = abs(radiobutton.size[0])
+        if radiobutton.size[1] < 0:
+            radiobutton.offset[1] += radiobutton.size[1]
+            radiobutton.size[1] = abs(radiobutton.size[1])
+
+        if radiobutton.id in [b.id for b in self.radiobuttons]:
+            radiobutton.id += str(len(self.radiobuttons))
+
+        self.radiobuttons.append(radiobutton)
+        return radiobutton
 
     def change_object_attr(self, object_id, attribute, value):
         for object in self.objects:
@@ -184,13 +226,16 @@ class Menu:
         }
 
     def get_object_with_id(self, id):
-        for object in [*self.buttons, *self.textboxes, *self.checkboxes]:
+        for object in self.objects:
             if object.id == id:
                 return object
 
         return None
 
     def is_mouse_hovering(self, scroll=[0,0]):
+        if not self.render_according_to_scroll:
+            scroll = [0,0]
+
         mouse_pos = pygame.mouse.get_pos()
 
         return (
@@ -203,7 +248,7 @@ class Menu:
 
     @property
     def objects(self):
-        return [*self.buttons, *self.textboxes, *self.checkboxes]
+        return [*self.buttons, *self.textboxes, *self.checkboxes, *self.radiobuttons]
 
     @property
     def render_offset(self):

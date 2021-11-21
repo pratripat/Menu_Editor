@@ -1,4 +1,9 @@
 import pygame, sys
+
+from tkinter import *
+from tkinter import filedialog
+
+from .menu_manager import Menu_Manager
 from .menu_editor_components.workspace import Workspace
 from .menu_editor_components.selection_panel import Selection_Panel
 from .menu_editor_components.format_panel import Format_Panel
@@ -8,6 +13,8 @@ pygame.display.set_caption('Menu Editor')
 class Menu_Editor:
     def __init__(self):
         self.screen = pygame.display.set_mode((1200, 700), pygame.RESIZABLE)
+
+        self.menu_manager = Menu_Manager(self)
         self.workspace = Workspace(self)
         self.format_panel = Format_Panel(self)
         self.selection_panel = Selection_Panel(self)
@@ -20,6 +27,7 @@ class Menu_Editor:
     def render(self):
         self.screen.fill((0,0,0))
 
+        self.menu_manager.render()
         self.workspace.render()
         self.selection_panel.render()
         self.format_panel.render()
@@ -29,6 +37,7 @@ class Menu_Editor:
     def update(self):
         self.clock.tick(self.fps)
 
+        self.menu_manager.update()
         self.workspace.update()
         self.selection_panel.update()
         self.format_panel.update()
@@ -44,8 +53,9 @@ class Menu_Editor:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-                else:
-                    self.keys_pressed.append(event.unicode)
+
+                self.keys_pressed.append(event.unicode)
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.workspace.update_current_object()
@@ -60,6 +70,12 @@ class Menu_Editor:
             self.event_loop()
             self.update()
             self.render()
+
+    def load_open_dialogbox(self):
+        filepath = filedialog.askopenfilename(initialdir = '//home//shubhendu//Documents//puttar//github-ssh//Menu_Editor//data/configs', filetypes = [("Json", '*.json')])
+
+        if filepath != ():
+            self.workspace.load_data(filepath)
 
     @property
     def dt(self):

@@ -125,5 +125,6 @@
       "interactable": true
     }
   ],
-  "checkboxes": []
+  "checkboxes": [],
+  "radiobuttons": []
 }

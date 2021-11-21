@@ -101,6 +101,8 @@ class Font:
 
     #Renders the text on the surface
     def render(self, screen, text, position, center=(False, False), scale=1, color=None, background_color=None, alpha=255, font_wrapping_width=None):
+        font_wrapping_width = max(10, font_wrapping_width)
+
         text = text.upper()
         surface = self.get_surface(text, font_wrapping_width)
         surface = pygame.transform.scale(surface, (round(surface.get_width()*scale), round(surface.get_height()*scale)))

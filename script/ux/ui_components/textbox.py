@@ -1,17 +1,17 @@
+import pygame
+
 from ..ui_component import UI_Component
 
 class TextBox(UI_Component):
-    def __init__(self, menu_editor, menu, data=None):
-        super().__init__(menu_editor, menu, 'textbox', data)
+    def __init__(self, menu, data=None):
+        super().__init__(menu, 'textbox', data)
 
     def update(self, scroll=[0,0]):
         super().update(scroll)
 
-    def check_for_inputs(self):
+    def check_for_inputs(self, keys=[]):
         if not self.interactable:
             return
-
-        keys = self.menu_editor.keys_pressed
 
         for key in keys:
             #backspace

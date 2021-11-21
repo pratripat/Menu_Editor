@@ -63,8 +63,7 @@ from ..font_renderer import Font
 """
 
 class UI_Component:
-    def __init__(self, menu_editor, menu, object_type, data=None):
-        self.menu_editor = menu_editor
+    def __init__(self, menu, object_type, data=None):
         self.menu = menu
 
         if not data:
@@ -104,7 +103,7 @@ class UI_Component:
 
         self.current_color = self.background_color
 
-    def render(self, scroll=[0,0]):
+    def render(self, screen, scroll=[0,0]):
         surface = pygame.Surface(self.size)
         surface.set_colorkey((0,0,0))
 
@@ -113,19 +112,19 @@ class UI_Component:
 
         surface.set_alpha(self.opacity/100*255)
 
-        self.menu_editor.screen.blit(surface, [self.position[0]-self.render_offset[0]-scroll[0], self.position[1]-self.render_offset[1]-scroll[1]])
+        screen.blit(surface, [self.position[0]-self.render_offset[0]-scroll[0], self.position[1]-self.render_offset[1]-scroll[1]])
 
         if self.font:
-            self.text = self.font.remove_unwanted_text(self.text)
+            # self.text = self.font.remove_unwanted_text(self.text)
 
             alpha = self.font_opacity/100*255
-            self.font.render(self.menu_editor.screen, self.text, [self.font_position[0]-self.render_offset[0]-scroll[0], self.font_position[1]-self.render_offset[1]-scroll[1]], center=(True, True), scale=self.font_scale, color=self.font_color, background_color=self.font_background, alpha=alpha, font_wrapping_width=self.size[0]-20)
+            self.font.render(screen, self.text, [self.font_position[0]-self.render_offset[0]-scroll[0], self.font_position[1]-self.render_offset[1]-scroll[1]], center=(True, True), scale=self.font_scale, color=self.font_color, background_color=self.font_background, alpha=alpha, font_wrapping_width=self.size[0]-20)
 
-    def highlight(self, scroll=[0,0]):
+    def highlight(self, screen, scroll=[0,0]):
         if not self.interactable:
             return
 
-        pygame.draw.rect(self.menu_editor.screen, self.border_color, [self.position[0]-self.render_offset[0]-scroll[0]-5, self.position[1]-self.render_offset[1]-scroll[1]-5, self.size[0]+10, self.size[1]+10], width=2, border_radius=self.border_radius)
+        pygame.draw.rect(screen, self.border_color, [self.position[0]-self.render_offset[0]-scroll[0]-5, self.position[1]-self.render_offset[1]-scroll[1]-5, self.size[0]+10, self.size[1]+10], width=2, border_radius=self.border_radius)
 
     def update(self, scroll=[0,0]):
         if self.is_mouse_hovering(scroll):
@@ -136,7 +135,7 @@ class UI_Component:
         if self.is_clicked(scroll):
             self.menu.send_event(f'{self.object_id}_click', self.id)
 
-    def check_for_inputs(self):
+    def check_for_inputs(self, keys=[]):
         pass
 
     def is_mouse_hovering(self, scroll=[0,0]):
@@ -152,7 +151,7 @@ class UI_Component:
             if self.is_mouse_hovering(scroll):
                 self.menu.selected_object = self
                 return True
-            elif not self.menu.is_clicked():
+            elif not self.menu.is_clicked(scroll):
                 self.menu.selected_object = None
             return False
 

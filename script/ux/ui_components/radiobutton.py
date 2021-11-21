@@ -1,9 +1,10 @@
 import pygame
+
 from ..ui_component import UI_Component
 
-class CheckBox(UI_Component):
+class RadioButton(UI_Component):
     def __init__(self, menu, data=None):
-        super().__init__(menu, 'checkbox', data)
+        super().__init__(menu, 'radiobutton', data)
 
         self.checked = False
         self.just_clicked = False
@@ -15,10 +16,10 @@ class CheckBox(UI_Component):
         pygame.draw.rect(surface, self.current_color, [0, 0, *self.size], border_radius=self.border_radius)
         pygame.draw.rect(surface, self.border_color, [0, 0, *self.size], width=self.border_width, border_radius=self.border_radius)
 
-        pygame.draw.rect(surface, self.border_color, [10, 10, self.size[1]-20, self.size[1]-20], width=self.border_width)
+        pygame.draw.circle(surface, self.border_color, [self.size[1]//2, self.size[1]//2], self.size[1]//2-10, width=self.border_width)
 
         if self.checked:
-            pygame.draw.rect(surface, self.border_color, [12, 12, self.size[1]-24, self.size[1]-24])
+            pygame.draw.circle(surface, self.border_color, [self.size[1]//2, self.size[1]//2], self.size[1]//2-10)
 
         surface.set_alpha(self.opacity/100*255)
 

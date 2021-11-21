@@ -1,5 +1,5 @@
 {
-  "id": "selection_panel_menu",
+  "id": "random_menu",
   "position": [0, 0],
   "size": [200, 200],
   "centered": false,
@@ -7,8 +7,9 @@
   "border_color": [255,255,209],
   "border_width": 1,
   "border_radius": 10,
-  "opacity": 50,
+  "opacity": 20,
   "buttons": [],
   "textboxes": [],
-  "checkboxes": []
+  "checkboxes": [],
+  "radiobuttons": []
 }

@@ -10,5 +10,6 @@
   "opacity": 100,
   "buttons": [],
   "textboxes": [],
-  "checkboxes": []
+  "checkboxes": [],
+  "radiobuttons": []
 }
