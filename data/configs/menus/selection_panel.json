@@ -65,8 +65,28 @@
       "font_background": null,
       "font_opacity": 100,
       "interactable": true
+    },
+    {
+      "id": "radiobutton_button",
+      "text": "radiobutton",
+      "offset": [20, 230],
+      "size": [150, 50],
+      "centered": false,
+      "background_color": [99,92,109],
+      "border_color": [255,255,209],
+      "hover_color": [255,255,209],
+      "border_width": 1,
+      "border_radius": 0,
+      "opacity": 100,
+      "font": "default_font.png",
+      "font_color": [255,255,209],
+      "font_scale": 1,
+      "font_background": null,
+      "font_opacity": 100,
+      "interactable": true
     }
   ],
   "textboxes": [],
-  "checkboxes": []
+  "checkboxes": [],
+  "radiobuttons": []
 }
