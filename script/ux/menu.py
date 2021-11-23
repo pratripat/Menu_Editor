@@ -11,6 +11,7 @@ class Menu:
             data = json.load(open('data/configs/default/menu.json', 'r'))
 
         self.is_menu = True
+        self.object_id = 'menu'
 
         #PROPERTIES
         self.id = data['id']
@@ -103,6 +104,8 @@ class Menu:
 
         for object in self.objects:
             object.update(scroll)
+            if object.is_clicked(scroll):
+                self.selected_object = object
 
         if self.selected_object:
             self.selected_object.check_for_inputs(keys)
@@ -222,7 +225,10 @@ class Menu:
             'border_width': self.border_width,
             'border_radius': self.border_radius,
             'opacity': self.opacity,
-            'buttons': self.buttons
+            "buttons": [button.get_data() for button in self.buttons],
+            "textboxes": [textbox.get_data() for textbox in self.textboxes],
+            "checkboxes": [checkbox.get_data() for checkbox in self.checkboxes],
+            "radiobuttons": [radiobutton.get_data() for radiobutton in self.radiobuttons]
         }
 
     def get_object_with_id(self, id):

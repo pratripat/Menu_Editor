@@ -5,7 +5,6 @@ class Workspace:
     def __init__(self, menu_editor):
         self.menu_editor = menu_editor
         self.main_menu = self.menu_editor.menu_manager.get_menu_with_id('main_menu')
-        # self.main_menu = Menu(self.menu_editor, json.load(open('data/configs/menus/main_menu.json', 'r')))
         self.current_menu = self.main_menu
         self.start_position = None
 
@@ -20,21 +19,37 @@ class Workspace:
 
         if self.current_menu.selected_object and self.current_menu.selected_object.object_id == 'textbox':
             self.menu_editor.format_panel.update_attrs()
-        else:
+        elif (not self.menu_editor.selection_panel.menu.selected_object and not self.menu_editor.format_panel.menu.selected_object):
             self.update_scrolling()
             if 'l' in self.menu_editor.keys_pressed:
                 self.menu_editor.load_open_dialogbox()
-        pass
+                self.current_menu = [menu for menu in self.menu_editor.menu_manager.menus if menu.id not in ['selection_panel_menu', 'format_panel_menu']][0]
+                self.set_current_object(self.current_menu)
+            elif 'o' in self.menu_editor.keys_pressed:
+                self.menu_editor.load_save_dialogbox()
 
     def update_current_object(self):
+        to_be_checked_menus = []
+
+        if self.menu_editor.format_panel.menu.is_mouse_hovering(self.scroll) or self.menu_editor.selection_panel.menu.is_mouse_hovering(self.scroll):
+            return
+
+        for menu in self.menu_editor.menu_manager.menus:
+            if menu.id not in ['selection_panel_menu', 'format_panel_menu']:
+                to_be_checked_menus.append(menu)
+
+        for menu in to_be_checked_menus:
+            if menu.is_mouse_hovering(self.scroll):
+                self.current_menu = menu
+                break
+
         for object in self.current_menu.objects:
-            if object.is_clicked(self.scroll):
+            if object.is_mouse_hovering(self.scroll):
                 self.set_current_object(object)
                 return
 
-        #TEMP
-        if self.current_menu.is_clicked(self.scroll):
-            self.set_current_object(self.current_menu)
+        self.set_current_object(self.current_menu)
+        self.current_menu.selected_object = None
 
     def update_scrolling(self):
         keys = pygame.key.get_pressed()
@@ -67,10 +82,6 @@ class Workspace:
 
         self.start_position = None
         pass
-
-    def load_data(self, filepath):
-        self.main_menu = Menu(self.menu_editor, json.load(open(filepath, 'r')))
-        self.current_menu = self.main_menu
 
     def set_current_object(self, object):
         self.current_object = object

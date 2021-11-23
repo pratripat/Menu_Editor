@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, json
 
 from tkinter import *
 from tkinter import filedialog
@@ -15,6 +15,7 @@ class Menu_Editor:
         self.screen = pygame.display.set_mode((1200, 700), pygame.RESIZABLE)
 
         self.menu_manager = Menu_Manager(self)
+        self.menu_manager.load_menus('data/configs/ui/menu_editor_ui.json')
         self.workspace = Workspace(self)
         self.format_panel = Format_Panel(self)
         self.selection_panel = Selection_Panel(self)
@@ -72,10 +73,19 @@ class Menu_Editor:
             self.render()
 
     def load_open_dialogbox(self):
-        filepath = filedialog.askopenfilename(initialdir = '//home//shubhendu//Documents//puttar//github-ssh//Menu_Editor//data/configs', filetypes = [("Json", '*.json')])
+        filepath = filedialog.askopenfilename(initialdir = '/home/shubhendu/Documents/puttar/github-ssh/Menu_Editor/data/configs', filetypes = [('Json', '*.json')])
 
         if filepath != ():
-            self.workspace.load_data(filepath)
+            self.menu_manager.clear_menus(['selection_panel_menu', 'format_panel_menu'])
+            self.menu_manager.load_menus(filepath)
+            self.menu_manager.arrange_menus(['*', 'selection_panel_menu', 'format_panel_menu'])
+
+    def load_save_dialogbox(self):
+        filepath = filedialog.asksaveasfilename(initialdir = '/home/shubhendu/Documents/puttar/github-ssh/Menu_Editor/data/configs', defaultextension = '.json', filetypes = [('Json', '*.json')])
+        file = open(filepath, 'w')
+        data = self.menu_manager.get_menu_data()
+        json.dump(data, file)
+        file.close()
 
     @property
     def dt(self):

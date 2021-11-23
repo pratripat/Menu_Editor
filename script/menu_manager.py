@@ -7,16 +7,17 @@ class Menu_Manager:
         self.menu_editor = menu_editor
         self.menus = []
 
-        self.load_menu([
-            'data/configs/menus/main_menu.json',
-            'data/configs/menus/selection_panel.json',
-            'data/configs/menus/format_panel.json'
-        ])
+    def load_menus(self, filepath):
+        menus = json.load(open(filepath, 'r'))
 
-    def load_menu(self, filepaths):
-        for filepath in filepaths:
-            menu = Menu(json.load(open(filepath, 'r')))
+        for menu_data in menus:
+            menu = Menu(menu_data)
             self.menus.append(menu)
+
+    def clear_menus(self, exception_ids=[]):
+        for menu in self.menus.copy():
+            if menu.id not in exception_ids:
+                self.menus.remove(menu)
 
     def render(self):
         for menu in self.menus:
@@ -32,3 +33,25 @@ class Menu_Manager:
                 return menu
 
         return None
+
+    def arrange_menus(self, order):
+        arranged_menus = [None for _ in range(len(self.menus))]
+        other_menus = []
+
+        for i, menu_id in enumerate(order):
+            if menu_id == '*':
+                for menu in self.menus:
+                    if menu.id not in order:
+                        other_menus.append(menu)
+                arranged_menus = arranged_menus[:i] + other_menus + arranged_menus[i+1:]
+                continue
+
+            menu = self.get_menu_with_id(menu_id)
+            if menu:
+                arranged_menus[i+len(other_menus)-1] = menu
+
+        self.menus = [menu for menu in arranged_menus if menu != None]
+
+    def get_menu_data(self):
+        data = [menu.get_data() for menu in self.menus]
+        return data
