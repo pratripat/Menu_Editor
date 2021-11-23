@@ -171,7 +171,8 @@ class UI_Component:
             'font_color': self.font_color,
             'font_scale': self.font_scale,
             'font_background': self.font_background,
-            'font_opacity': self.font_opacity
+            'font_opacity': self.font_opacity,
+            "interactable": self.interactable
         }
 
     @property
