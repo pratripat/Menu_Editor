@@ -2,66 +2,6 @@ import pygame, json
 
 from ..font_renderer import Font
 
-"""
-{
-"id": "menu_button",
-"text": "Menu",
-"offset": [20, 20],
-"size": [150, 50],
-"centered": false,
-"background_color": [99,92,109],
-"border_color": [255,255,209],
-"hover_color": [255,255,209],
-"border_width": 1,
-"border_radius": 10,
-"opacity": 100,
-"font": "default_font.png",
-"font_color": [0,0,1],
-"font_scale": 1.5,
-"font_background": null,
-"font_opacity": 100,
-"interactable": true
-},
-{
-"id": "button_button",
-"text": "Button",
-"offset": [20, 100],
-"size": [150, 50],
-"centered": false,
-"background_color": [99,92,109],
-"border_color": [255,255,209],
-"hover_color": [255,255,209],
-"border_width": 1,
-"border_radius": 10,
-"opacity": 100,
-"font": "default_font.png",
-"font_color": [0,0,1],
-"font_scale": 1.5,
-"font_background": null,
-"font_opacity": 100,
-"interactable": true
-},
-{
-"id": "textbox_button",
-"text": "Text Box",
-"offset": [20, 180],
-"size": [150, 50],
-"centered": false,
-"background_color": [99,92,109],
-"border_color": [255,255,209],
-"hover_color": [255,255,209],
-"border_width": 1,
-"border_radius": 10,
-"opacity": 100,
-"font": "default_font.png",
-"font_color": [0,0,1],
-"font_scale": 1.5,
-"font_background": null,
-"font_opacity": 100,
-"interactable": true
-}
-"""
-
 class UI_Component:
     def __init__(self, menu, object_type, data=None):
         self.menu = menu
@@ -77,7 +17,7 @@ class UI_Component:
         self.offset = data['offset']
         self.size = data['size']
         self.centered = data['centered']
-        self.object_id = self.id.split('_')[-1] # button from random_button
+        self.object_id = ''.join(i for i in self.id if not i.isdigit()).split('_')[-1] # button from random_button
 
         #STYLE
         self.background_color = data['background_color']
@@ -158,7 +98,8 @@ class UI_Component:
     def get_data(self):
         return {
             'id': self.id,
-            'position': self.position,
+            'text': self.text,
+            'offset': self.offset,
             'size': self.size,
             'centered': self.centered,
             'background_color': self.background_color,

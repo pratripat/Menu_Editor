@@ -52,6 +52,6 @@ class Menu_Manager:
 
         self.menus = [menu for menu in arranged_menus if menu != None]
 
-    def get_menu_data(self):
-        data = [menu.get_data() for menu in self.menus]
+    def get_menu_data(self, exception_ids=[]):
+        data = [menu.get_data() for menu in self.menus if menu.id not in exception_ids]
         return data
