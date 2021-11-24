@@ -75,17 +75,23 @@ class Menu_Editor:
     def load_open_dialogbox(self):
         filepath = filedialog.askopenfilename(initialdir = '/home/shubhendu/Documents/puttar/github-ssh/Menu_Editor/data/configs', filetypes = [('Json', '*.json')])
 
-        if filepath != ():
+        try:
             self.menu_manager.clear_menus(['selection_panel_menu', 'format_panel_menu'])
             self.menu_manager.load_menus(filepath)
             self.menu_manager.arrange_menus(['*', 'selection_panel_menu', 'format_panel_menu'])
+        except:
+            pass
 
     def load_save_dialogbox(self):
         filepath = filedialog.asksaveasfilename(initialdir = '/home/shubhendu/Documents/puttar/github-ssh/Menu_Editor/data/configs', defaultextension = '.json', filetypes = [('Json', '*.json')])
-        file = open(filepath, 'w')
-        data = self.menu_manager.get_menu_data()
-        json.dump(data, file)
-        file.close()
+
+        try:
+            file = open(filepath, 'w')
+            data = self.menu_manager.get_menu_data(['selection_panel_menu', 'format_panel_menu'])
+            json.dump(data, file)
+            file.close()
+        except:
+            pass
 
     @property
     def dt(self):

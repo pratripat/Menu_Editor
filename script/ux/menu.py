@@ -30,7 +30,8 @@ class Menu:
         self.buttons = self.load_buttons(data['buttons'])
         self.textboxes = self.load_textboxes(data['textboxes'])
         self.checkboxes = self.load_checkboxes(data['checkboxes'])
-        self.radiobuttons = data['radiobuttons']
+        self.radiobuttons = self.load_radiobuttons(data['radiobuttons'])
+
         # self.sub_menus = data['sub_menus']
         self.events = {'button_click': [], 'textbox_click': [], 'checkbox_click': [], 'radiobutton_click': []}
 
@@ -63,7 +64,7 @@ class Menu:
 
         return checkboxes
 
-    def load_radiobuttons(self, checkboxes_data):
+    def load_radiobuttons(self, radiobuttons_data):
         radiobuttons = []
 
         for data in radiobuttons_data:
@@ -215,6 +216,7 @@ class Menu:
                     print('attribute setting error.')
 
     def get_data(self):
+        print(self.buttons, self.textboxes, self.checkboxes, self.radiobuttons)
         return {
             'id': self.id,
             'position': self.position,

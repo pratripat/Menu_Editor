@@ -17,16 +17,47 @@ class Format_Panel:
         for object in self.menu.objects:
             if object.id == 'object_id_textbox':
                 self.menu_editor.workspace.current_object.id = object.text
-            if object.id == 'object_text_textbox':
+            elif object.id == 'object_text_textbox':
                 if not self.menu_editor.workspace.current_object.is_menu:
                     self.menu_editor.workspace.current_object.text = object.text
+            elif object.id == 'object_offset_x_textbox':
+                if not self.menu_editor.workspace.current_object.is_menu:
+                    number = ''.join(i for i in object.text if i.isdigit())
+                    if number == '': number = '0'
+                    self.menu_editor.workspace.current_object.offset[0] = int(number)
+            elif object.id == 'object_offset_y_textbox':
+                if not self.menu_editor.workspace.current_object.is_menu:
+                    number = ''.join(i for i in object.text if i.isdigit())
+                    if number == '': number = '0'
+                    self.menu_editor.workspace.current_object.offset[1] = int(number)
+            elif object.id == 'object_size_x_textbox':
+                number = ''.join(i for i in object.text if i.isdigit())
+                if number == '': number = '0'
+                self.menu_editor.workspace.current_object.size[0] = int(number)
+            elif object.id == 'object_size_y_textbox':
+                number = ''.join(i for i in object.text if i.isdigit())
+                if number == '': number = '0'
+                self.menu_editor.workspace.current_object.size[1] = int(number)
+            elif object.id == 'object_centered_textbox':
+                self.menu_editor.workspace.current_object.centered = object.checked    
 
     def update_attrs(self):
-        self.menu.change_object_attr('object_id_textbox', 'text', self.menu_editor.workspace.current_object.id)
-
         if not self.menu_editor.workspace.current_object.is_menu:
             self.menu.get_object_with_id('object_text_textbox').interactable = True
+            self.menu.get_object_with_id('object_offset_x_textbox').interactable = True
+            self.menu.get_object_with_id('object_offset_y_textbox').interactable = True
             self.menu.change_object_attr('object_text_textbox', 'text', self.menu_editor.workspace.current_object.text)
+            self.menu.change_object_attr('object_offset_x_textbox', 'text', str(int(self.menu_editor.workspace.current_object.offset[0])))
+            self.menu.change_object_attr('object_offset_y_textbox', 'text', str(int(self.menu_editor.workspace.current_object.offset[1])))
         else:
             self.menu.get_object_with_id('object_text_textbox').interactable = False
+            self.menu.get_object_with_id('object_offset_x_textbox').interactable = False
+            self.menu.get_object_with_id('object_offset_y_textbox').interactable = False
             self.menu.change_object_attr('object_text_textbox', 'text', '')
+            self.menu.change_object_attr('object_offset_x_textbox', 'text', '0')
+            self.menu.change_object_attr('object_offset_y_textbox', 'text', '0')
+
+        self.menu.change_object_attr('object_id_textbox', 'text', self.menu_editor.workspace.current_object.id)
+        self.menu.change_object_attr('object_size_x_textbox', 'text', str(int(self.menu_editor.workspace.current_object.size[0])))
+        self.menu.change_object_attr('object_size_y_textbox', 'text', str(int(self.menu_editor.workspace.current_object.size[1])))
+        self.menu.change_object_attr('object_centered_textbox', 'checked', self.menu_editor.workspace.current_object.centered)
