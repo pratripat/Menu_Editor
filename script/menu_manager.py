@@ -8,16 +8,33 @@ class Menu_Manager:
         self.menus = []
 
     def load_menus(self, filepath):
-        menus = json.load(open(filepath, 'r'))
+        try:
+            menus = json.load(open(filepath, 'r'))
 
-        for menu_data in menus:
-            menu = Menu(menu_data)
-            self.menus.append(menu)
+            for menu_data in menus:
+                menu = Menu(menu_data)
+                self.menus.append(menu)
+        except Exception as e:
+            print('=========================================')
+            print(e)
+            print(filepath, 'could not be loaded...')
+            print('=========================================')
 
     def clear_menus(self, exception_ids=[]):
         for menu in self.menus.copy():
             if menu.id not in exception_ids:
                 self.menus.remove(menu)
+
+    def add_menu(self, filepath):
+        try:
+            data = json.load(open(filepath, 'r'))
+            menu = Menu(data)
+            self.menus.append(menu)
+        except Exception as e:
+            print('=========================================')
+            print(e)
+            print(filepath, 'could not be loaded...')
+            print('=========================================')
 
     def render(self):
         for menu in self.menus:

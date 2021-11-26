@@ -93,6 +93,15 @@ class Menu_Editor:
         except:
             pass
 
+    def load_open_fontfile_dialogbox(self):
+        filepath = filedialog.askopenfilename(initialdir = '/home/shubhendu/Documents/puttar/github-ssh/Menu_Editor/data/graphics/spritesheet', filetypes = [("PNG", "*.png")])
+
+        try:
+            image = pygame.image.load(filepath)
+            return filepath
+        except:
+            return None
+
     @property
     def dt(self):
         return 1/self.clock.get_fps()+0.00001

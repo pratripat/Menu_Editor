@@ -74,8 +74,7 @@ class Menu:
         return radiobuttons
 
     def render(self, screen, scroll=[0,0]):
-        if not self.render_according_to_scroll:
-            scroll = [0,0]
+        scroll = self.get_scroll(scroll)
 
         surface = pygame.Surface(self.size)
         surface.set_colorkey((0,0,0))
@@ -100,8 +99,7 @@ class Menu:
             self.selected_object.highlight(screen, scroll)
 
     def update(self, scroll=[0,0], keys=[]):
-        if not self.render_according_to_scroll:
-            scroll = [0,0]
+        scroll = self.get_scroll(scroll)
 
         for object in self.objects:
             object.update(scroll)
@@ -215,8 +213,12 @@ class Menu:
                     print(e)
                     print('attribute setting error.')
 
+    def get_scroll(self, scroll):
+        if self.render_according_to_scroll:
+            return scroll
+        return [0,0]
+
     def get_data(self):
-        print(self.buttons, self.textboxes, self.checkboxes, self.radiobuttons)
         return {
             'id': self.id,
             'position': self.position,
@@ -241,8 +243,7 @@ class Menu:
         return None
 
     def is_mouse_hovering(self, scroll=[0,0]):
-        if not self.render_according_to_scroll:
-            scroll = [0,0]
+        scroll = self.get_scroll(scroll)
 
         mouse_pos = pygame.mouse.get_pos()
 
