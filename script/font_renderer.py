@@ -128,7 +128,7 @@ class Font:
                 temp_pos[0] += self.space_width
 
         if color:
-            surface = self.change_color(surface, (252,252,252), color)
+            surface = self.change_color(surface, self.get_font_color(), color)
             surface.set_colorkey((0,0,0))
 
         if center[0]:
@@ -155,3 +155,12 @@ class Font:
                 text = text.replace(chr, '')
 
         return text
+
+    def get_font_color(self):
+        character = self.images[0]
+
+        for x in range(character.get_width()):
+            for y in range(character.get_height()):
+                pixel_color = character.get_at((x, y))
+                if pixel_color[:3] != (0, 0, 0):
+                    return pixel_color[:3]

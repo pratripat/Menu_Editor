@@ -28,13 +28,8 @@ class UI_Component:
         self.opacity = data['opacity']
 
         #TEXT
-        if data['font'] != None:
-            self.font = Font('data/graphics/spritesheet/'+data['font'])
-            self.font_filename = data['font']
-        else:
-            self.font = None
-            self.font_filename = None
-
+        self.font = None
+        self.font_filename = None
         self.font_color = data['font_color']
         self.font_scale = data['font_scale']
         self.font_background = data['font_background']
@@ -42,6 +37,7 @@ class UI_Component:
         self.interactable = data['interactable']
 
         self.current_color = self.background_color
+        self.load_font(f'data/graphics/spritesheet/{data["font"]}')
 
     def render(self, screen, scroll=[0,0]):
         surface = pygame.Surface(self.size)
@@ -55,8 +51,6 @@ class UI_Component:
         screen.blit(surface, [self.position[0]-self.render_offset[0]-scroll[0], self.position[1]-self.render_offset[1]-scroll[1]])
 
         if self.font:
-            # self.text = self.font.remove_unwanted_text(self.text)
-
             alpha = self.font_opacity/100*255
             self.font.render(screen, self.text, [self.font_position[0]-self.render_offset[0]-scroll[0], self.font_position[1]-self.render_offset[1]-scroll[1]], center=(True, True), scale=self.font_scale, color=self.font_color, background_color=self.font_background, alpha=alpha, font_wrapping_width=self.size[0]-20)
 
@@ -94,6 +88,22 @@ class UI_Component:
             elif not self.menu.is_clicked(scroll):
                 self.menu.selected_object = None
             return False
+
+    def load_font(self, font_filename):
+        try:
+            image = pygame.image.load(font_filename)
+        except:
+            print(font_filename, 'could not be loaded..')
+            return
+
+        self.font = Font(font_filename)
+        self.font_filename = font_filename
+        print(font_filename, 'loaded succesfully!')
+
+    def get_font_background(self):
+        if self.font_background == None:
+            return [0, 0, 0]
+        return self.font_background
 
     def get_data(self):
         return {
