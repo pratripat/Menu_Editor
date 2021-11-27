@@ -25,8 +25,6 @@ class CheckBox(UI_Component):
         screen.blit(surface, [self.position[0]-self.render_offset[0]-scroll[0], self.position[1]-self.render_offset[1]-scroll[1]])
 
         if self.font:
-            self.text = self.font.remove_unwanted_text(self.text)
-
             alpha = self.font_opacity/100*255
             self.font.render(screen, self.text, [self.font_position[0]+self.size[1]-24-self.render_offset[0]-scroll[0], self.font_position[1]-self.render_offset[1]-scroll[1]], center=(True, True), scale=self.font_scale, color=self.font_color, background_color=self.font_background, alpha=alpha, font_wrapping_width=self.size[0]-self.size[1]-20)
 
