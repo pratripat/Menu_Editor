@@ -3,11 +3,11 @@ import pygame, json
 from ..font_renderer import Font
 
 class UI_Component:
-    def __init__(self, menu, object_type, data=None):
+    def __init__(self, menu, object_id, data=None):
         self.menu = menu
 
         if not data:
-            data = json.load(open('data/configs/default/'+object_type+'.json', 'r'))
+            data = json.load(open('data/configs/default/'+object_id+'.json', 'r'))
 
         self.is_menu = False
 
@@ -17,7 +17,7 @@ class UI_Component:
         self.offset = data['offset']
         self.size = data['size']
         self.centered = data['centered']
-        self.object_id = ''.join(i for i in self.id if not i.isdigit()).split('_')[-1] # button from random_button
+        self.object_id = object_id
 
         #STYLE
         self.background_color = data['background_color']
@@ -37,7 +37,7 @@ class UI_Component:
         self.interactable = data['interactable']
 
         self.current_color = self.background_color
-        self.load_font(f'data/graphics/spritesheet/{data["font"]}')
+        self.load_font(data['font'])
 
     def render(self, screen, scroll=[0,0]):
         surface = pygame.Surface(self.size)
@@ -98,7 +98,6 @@ class UI_Component:
 
         self.font = Font(font_filename)
         self.font_filename = font_filename
-        print(font_filename, 'loaded succesfully!')
 
     def get_font_background(self):
         if self.font_background == None:
@@ -123,7 +122,7 @@ class UI_Component:
             'font_scale': self.font_scale,
             'font_background': self.font_background,
             'font_opacity': self.font_opacity,
-            "interactable": self.interactable
+            'interactable': self.interactable
         }
 
     @property

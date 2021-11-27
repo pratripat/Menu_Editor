@@ -93,7 +93,6 @@ class Format_Panel:
             elif object.id == 'object_interactable_checkbox':
                 if not self.menu_editor.workspace.current_object.is_menu:
                     self.menu_editor.workspace.current_object.interactable = object.checked
-                    print(self.menu_editor.workspace.current_object.interactable, object.checked)
 
         self.menu.update()
 
