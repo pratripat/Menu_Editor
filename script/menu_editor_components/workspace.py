@@ -19,23 +19,23 @@ class Workspace:
 
         if self.current_menu.selected_object and self.current_menu.selected_object.object_id == 'textbox':
             self.menu_editor.format_panel.update_attrs()
-        elif (not self.menu_editor.selection_panel.menu.selected_object and not self.menu_editor.format_panel.menu.selected_object):
+        elif (not self.menu_editor.selection_panel.menu.selected_object):
             self.update_scrolling()
-            if 'l' in self.menu_editor.keys_pressed:
+            if pygame.K_l in self.menu_editor.input.keys_pressed:
                 self.menu_editor.load_open_dialogbox()
-                self.current_menu = [menu for menu in self.menu_editor.menu_manager.menus if menu.id not in ['selection_panel_menu', 'format_panel_menu']][0]
+                self.current_menu = [menu for menu in self.menu_editor.menu_manager.menus if menu.id not in ['selection_panel_menu', 'format_panel_menu', 'options_menu']][0]
                 self.set_current_object(self.current_menu)
-            elif 'o' in self.menu_editor.keys_pressed:
+            elif pygame.K_o in self.menu_editor.input.keys_pressed:
                 self.menu_editor.load_save_dialogbox()
 
     def update_current_object(self):
         to_be_checked_menus = []
 
-        if self.menu_editor.format_panel.menu.is_mouse_hovering(self.scroll) or self.menu_editor.selection_panel.menu.is_mouse_hovering(self.scroll):
+        if self.menu_editor.format_panel.menu.is_mouse_hovering(self.scroll) or self.menu_editor.selection_panel.menu.is_mouse_hovering(self.scroll) or self.menu_editor.options_menu.is_mouse_hovering(self.scroll):
             return
 
         for menu in self.menu_editor.menu_manager.menus:
-            if menu.id not in ['selection_panel_menu', 'format_panel_menu']:
+            if menu.id not in ['selection_panel_menu', 'format_panel_menu', 'options_menu']:
                 to_be_checked_menus.append(menu)
 
         for menu in to_be_checked_menus:
