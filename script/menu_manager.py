@@ -42,7 +42,7 @@ class Menu_Manager:
 
     def update(self):
         for menu in self.menus:
-            menu.update(self.menu_editor.workspace.scroll, self.menu_editor.keys_pressed)
+            menu.update(self.menu_editor.workspace.scroll, self.menu_editor.input.keys_pressed)
 
     def get_menu_with_id(self, id):
         for menu in self.menus:

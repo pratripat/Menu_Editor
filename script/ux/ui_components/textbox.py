@@ -14,9 +14,14 @@ class TextBox(UI_Component):
             return
 
         for key in keys:
-            #backspace
-            if key == '\x08':
+            key_name = pygame.key.name(key)
+            if key_name == 'backspace':
                 self.text = self.text[:-1]
-            #other keys
+            elif key_name == 'space':
+                self.text += ' '
+            elif key_name == 'return':
+                self.text += '\r'
+            elif key_name in [letter for letter in 'acdefghijklmnopqrstuvwxyz0123456789,./;"!@#$%^&*()_+=-'+"'"]:
+                self.text += key_name
             else:
-                self.text += key
+                print(key_name, 'was not added to the text...')

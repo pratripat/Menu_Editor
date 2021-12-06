@@ -18,6 +18,8 @@ class UI_Component:
         self.size = data['size']
         self.centered = data['centered']
         self.object_id = object_id
+        self.image = None
+        self.image_filepath = None
 
         #STYLE
         self.background_color = data['background_color']
@@ -38,6 +40,7 @@ class UI_Component:
 
         self.current_color = self.background_color
         self.load_font(data['font'])
+        self.set_image(data['image'])
 
     def render(self, screen, scroll=[0,0]):
         surface = pygame.Surface(self.size)
@@ -49,6 +52,9 @@ class UI_Component:
         surface.set_alpha(self.opacity/100*255)
 
         screen.blit(surface, [self.position[0]-self.render_offset[0]-scroll[0], self.position[1]-self.render_offset[1]-scroll[1]])
+
+        if self.image:
+            screen.blit(self.image, [self.position[0]+self.size[0]/2-self.image.get_width()/2-self.render_offset[0]-scroll[0], self.position[1]+self.size[1]/2-self.image.get_height()/2-self.render_offset[1]-scroll[1]])
 
         if self.font:
             alpha = self.font_opacity/100*255
@@ -99,6 +105,19 @@ class UI_Component:
         self.font = Font(font_filename)
         self.font_filename = font_filename
 
+    def set_image(self, filepath):
+        if filepath == None:
+            return
+
+        try:
+            image = pygame.image.load(filepath)
+        except:
+            print('could not load image. filepath: ', filepath)
+            return
+
+        self.image_filepath = filepath
+        self.image = image
+
     def get_font_background(self):
         if self.font_background == None:
             return [0, 0, 0]
@@ -117,6 +136,7 @@ class UI_Component:
             'border_width': self.border_width,
             'border_radius': self.border_radius,
             'opacity': self.opacity,
+            'image': self.image_filepath,
             'font': self.font_filename,
             'font_color': self.font_color,
             'font_scale': self.font_scale,
