@@ -18,8 +18,6 @@ class UI_Component:
         self.size = data['size']
         self.centered = data['centered']
         self.object_id = object_id
-        self.image = None
-        self.image_filepath = None
 
         #STYLE
         self.background_color = data['background_color']
@@ -28,6 +26,11 @@ class UI_Component:
         self.border_width = data['border_width']
         self.border_radius = data['border_radius']
         self.opacity = data['opacity']
+
+        #IMAGE
+        self.original_image = None
+        self.image_filepath = None
+        self.image_scale = data['image_scale']
 
         #TEXT
         self.font = None
@@ -53,7 +56,7 @@ class UI_Component:
 
         screen.blit(surface, [self.position[0]-self.render_offset[0]-scroll[0], self.position[1]-self.render_offset[1]-scroll[1]])
 
-        if self.image:
+        if self.original_image:
             screen.blit(self.image, [self.position[0]+self.size[0]/2-self.image.get_width()/2-self.render_offset[0]-scroll[0], self.position[1]+self.size[1]/2-self.image.get_height()/2-self.render_offset[1]-scroll[1]])
 
         if self.font:
@@ -116,7 +119,10 @@ class UI_Component:
             return
 
         self.image_filepath = filepath
-        self.image = image
+        self.original_image = image
+
+    def set_image_scale(self, scale):
+        self.image_scale = scale
 
     def get_font_background(self):
         if self.font_background == None:
@@ -137,6 +143,7 @@ class UI_Component:
             'border_radius': self.border_radius,
             'opacity': self.opacity,
             'image': self.image_filepath,
+            'image_scale': self.image_scale,
             'font': self.font_filename,
             'font_color': self.font_color,
             'font_scale': self.font_scale,
@@ -158,3 +165,11 @@ class UI_Component:
         if self.centered:
             return [self.size[0]/2, self.size[1]/2]
         return [0, 0]
+
+    @property
+    def image(self):
+        if self.original_image:
+            image = pygame.transform.scale(self.original_image, (int(self.original_image.get_width()*self.image_scale), int(self.original_image.get_height()*self.image_scale)))
+            image.set_colorkey((0,0,0))
+            return image
+        return self.original_image

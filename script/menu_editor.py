@@ -7,6 +7,7 @@ from .menu_manager import Menu_Manager
 from .menu_editor_components.workspace import Workspace
 from .menu_editor_components.selection_panel import Selection_Panel
 from .menu_editor_components.format_panel import Format_Panel
+from .menu_editor_components.options_panel import Options_Panel
 from .input_system import Input
 
 pygame.display.set_caption('Menu Editor')
@@ -20,12 +21,10 @@ class Menu_Editor:
         self.workspace = Workspace(self)
         self.format_panel = Format_Panel(self)
         self.selection_panel = Selection_Panel(self)
-        self.options_menu = self.menu_manager.get_menu_with_id('options_menu')
+        self.options_panel = Options_Panel(self)
         self.input = Input()
 
         self.workspace.set_current_object(self.workspace.main_menu)
-
-        self.options_menu.render_according_to_scroll = False
 
         self.clock = pygame.time.Clock()
         self.fps = 100
@@ -34,9 +33,9 @@ class Menu_Editor:
         self.screen.fill((0,0,0))
 
         self.menu_manager.render()
-        self.workspace.render()
-        self.selection_panel.render()
-        self.format_panel.render()
+        # self.workspace.render()
+        # self.selection_panel.render()
+        # self.format_panel.render()
 
         pygame.display.update()
 
@@ -48,6 +47,7 @@ class Menu_Editor:
         self.workspace.update()
         self.selection_panel.update()
         self.format_panel.update()
+        self.options_panel.update()
 
         self.inputs()
 
@@ -60,25 +60,13 @@ class Menu_Editor:
         if self.input.mouse_states['right_release']:
             self.workspace.add_object(pygame.mouse.get_pos())
 
-        if self.options_menu.selected_object:
-            if self.options_menu.selected_object.id == 'image_button':
-                filepath = self.load_open_image_dialogbox()
-
-                if filepath != () and self.workspace.current_object:
-                    self.workspace.current_object.set_image(filepath)
-
-                self.options_menu.selected_object = None
-            elif self.options_menu.selected_object.id == 'delete_image_button':
-                if self.workspace.current_object:
-                    self.workspace.current_object.image_filepath = self.workspace.current_object.image = None
-                self.options_menu.selected_object = None
-
     def run(self):
         while True:
             self.update()
             self.render()
 
     def load_open_dialogbox(self):
+        Tk().withdraw()
         filepath = filedialog.askopenfilename(initialdir = '/home/shubhendu/Documents/puttar/github-ssh/Menu_Editor/data/configs', filetypes = [('Json', '*.json')])
 
         try:
@@ -89,6 +77,7 @@ class Menu_Editor:
             pass
 
     def load_save_dialogbox(self):
+        Tk().withdraw()
         filepath = filedialog.asksaveasfilename(initialdir = '/home/shubhendu/Documents/puttar/github-ssh/Menu_Editor/data/configs', defaultextension = '.json', filetypes = [('Json', '*.json')])
 
         try:
@@ -100,6 +89,7 @@ class Menu_Editor:
             pass
 
     def load_open_fontfile_dialogbox(self):
+        Tk().withdraw()
         filepath = filedialog.askopenfilename(initialdir = '/home/shubhendu/Documents/puttar/github-ssh/Menu_Editor/data/graphics/spritesheet', filetypes = [('PNG', '*.png')])
 
         try:
@@ -109,6 +99,7 @@ class Menu_Editor:
             return None
 
     def load_open_image_dialogbox(self):
+        Tk().withdraw()
         filepath = filedialog.askopenfilename(initialdir = '/home/shubhendu/Documents/puttar/github-ssh/Menu_Editor/data/graphics', filetypes = [('PNG', '*.png')])
 
         try:

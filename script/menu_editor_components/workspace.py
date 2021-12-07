@@ -19,6 +19,7 @@ class Workspace:
 
         if self.current_menu.selected_object and self.current_menu.selected_object.object_id == 'textbox':
             self.menu_editor.format_panel.update_attrs()
+            self.menu_editor.options_panel.update_attrs()
         elif (not self.menu_editor.selection_panel.menu.selected_object):
             self.update_scrolling()
             if pygame.K_l in self.menu_editor.input.keys_pressed:
@@ -31,7 +32,7 @@ class Workspace:
     def update_current_object(self):
         to_be_checked_menus = []
 
-        if self.menu_editor.format_panel.menu.is_mouse_hovering(self.scroll) or self.menu_editor.selection_panel.menu.is_mouse_hovering(self.scroll) or self.menu_editor.options_menu.is_mouse_hovering(self.scroll):
+        if self.menu_editor.format_panel.menu.is_mouse_hovering(self.scroll) or self.menu_editor.selection_panel.menu.is_mouse_hovering(self.scroll) or self.menu_editor.options_panel.menu.is_mouse_hovering(self.scroll):
             return
 
         for menu in self.menu_editor.menu_manager.menus:
@@ -86,6 +87,7 @@ class Workspace:
     def set_current_object(self, object):
         self.current_object = object
         self.menu_editor.format_panel.update_attrs()
+        self.menu_editor.options_panel.update_attrs()
 
     def set_start_position(self, position):
         self.start_position = [position[0]+self.scroll[0], position[1]+self.scroll[1]]
