@@ -51,6 +51,11 @@ class Menu_Manager:
 
         return None
 
+    def get_selected_object(self):
+        for menu in self.menus:
+            if menu.selected_object:
+                return menu.selected_object    
+
     def arrange_menus(self, order):
         arranged_menus = [None for _ in range(len(self.menus))]
         other_menus = []

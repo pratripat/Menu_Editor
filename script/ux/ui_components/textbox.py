@@ -21,7 +21,7 @@ class TextBox(UI_Component):
                 self.text += ' '
             elif key_name == 'return':
                 self.text += '\r'
-            elif key_name in [letter for letter in 'acdefghijklmnopqrstuvwxyz0123456789,./;"!@#$%^&*()_+=-'+"'"]:
+            elif key_name in [letter for letter in 'abcdefghijklmnopqrstuvwxyz0123456789,./;"!@#$%^&*()_+=-'+"'"]:
                 self.text += key_name
             else:
                 print(key_name, 'was not added to the text...')
