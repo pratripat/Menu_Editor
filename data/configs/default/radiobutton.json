@@ -12,7 +12,7 @@
   "opacity": 100,
   "image": null,
   "image_scale": 0,
-  "font": "data/graphics/spritesheet/default_font.png",
+  "font": "/home/shubhendu/Documents/puttar/github-ssh/Menu_Editor/data/graphics/spritesheet/default_font.png",
   "font_color": [255,255,209],
   "font_scale": 1,
   "font_background": null,

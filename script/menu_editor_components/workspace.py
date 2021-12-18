@@ -20,7 +20,7 @@ class Workspace:
         if self.current_menu.selected_object and self.current_menu.selected_object.object_id == 'textbox':
             self.menu_editor.format_panel.update_attrs()
             self.menu_editor.options_panel.update_attrs()
-        elif (not self.menu_editor.selection_panel.menu.selected_object):
+        elif not self.menu_editor.menu_manager.get_selected_object():
             self.update_scrolling()
             if pygame.K_l in self.menu_editor.input.keys_pressed:
                 self.menu_editor.load_open_dialogbox()
